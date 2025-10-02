@@ -6,3 +6,7 @@ __pycache__/
 wandb/
 outs/
 dev/
+
+# ds
+dataset/*/*.pkl
+dataset/*/*.md

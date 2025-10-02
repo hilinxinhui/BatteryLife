@@ -2,8 +2,6 @@
 
 You can read the data using the read_data_structure.py script. It demonstrates the basic loading and structure of the standardized data in our processed datasets.
 
-
-
 Each file contains the following keys:
 
 - cell_id: the file name of the battery.

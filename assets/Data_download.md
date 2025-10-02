@@ -2,8 +2,6 @@
 
 There is a tutorial for teaching users how to download the `raw data` and `processed data` of the `BatteryLife` project from huggingface website.
 
-
-
 ## How to download the processed data from huggingface
 
 **Data downloading tutorial for processed data:**
@@ -32,9 +30,11 @@ There is a tutorial for teaching users how to download the `raw data` and `proce
   huggingface-cli download --repo-type dataset --token your_access_token --resume-download Battery-Life/BatteryLife_Processed --cache-dir /path/to/your/folder/
   ```
 
+```Shell
+hf download --repo-type dataset --token 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 Battery-Life/BatteryLife_Processed --cache-dir ./ds
+```
+
 then the processed data will be downloaded into the `/path/to/your/folder/BatteryLife/test/datasets--Battery-Life--BatteryLife_Processed/snapshots` file.
-
-
 
 ## (ZN-ion/NA-ion/CALB raw data downloading) How to download the raw data from huggingface
 

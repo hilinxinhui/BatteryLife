@@ -2,8 +2,6 @@
 
 Note: For the Li-ion dataset, we obtain the best hyperparameters using 2021 as the random seed. After that, we evaluate the model performance using the same hyperparameters using 2024 and 42 as the random seeds. The reported results are the mean±standard deviation. As for other datasets, we obtain the hyperparameters that perform the best on the validation set regarding the average results from three runs with three random seeds (42, 2021, and 2024), and report the corresponding model performance on the testing sets. In this vein, we introduce the specific steps for each dataset using `CPTransformer `as an example.
 
-
-
 ## Li-ion
 
 First, you should run the following script:

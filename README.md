@@ -2,20 +2,6 @@
 
 This is the official repository for [BatteryLife: A Comprehensive Dataset and Benchmark for Battery Life Prediction](https://dl.acm.org/doi/10.1145/3711896.3737372). If you find this repository useful, we would appreciate citations to our paper and stars to this repository.
 
-🔥**News** (2025.08) BatteryLife downloads exceed 10,000.
-
-🔥**News** (2025.07) BatteryLife downloads exceed 7,000.
-
-🔥**News** (2025.06) BatteryLife downloads exceed 5,000.
-
-:triangular_flag_on_post:**News** (2025.06) Add the complete Stanford dataset as "Stanford_2" (now including both releases of the Stanford dataset).
-
-:triangular_flag_on_post:**News** (2025.05) BatteryLife was accpeted by KDD 2025.
-
-🔥**News** (2025.05) BatteryLife downloads exceed 3,000. ​
-
-:triangular_flag_on_post:**News** (2025.02) BatteryLife was released!
-
 ## Highlights
 
 - **The largest battery life dataset:** BatteryLife is created by integrating 16 datasets, providing 99,000 samples from 990 batteries with life labels. This is 2.5 times the size of BatteryML, which is the previous largest battery life resource.
@@ -82,6 +68,22 @@ The benchmark result for battery life prediction. The comparison methods are spl
 ```
 pip install -r requirements.txt
 # You should also install BatteryML (https://github.com/microsoft/BatteryML)
+```
+
+```Shell
+conda create -n BatteryLife python=3.10 -y
+pip3 install torch torchvision --index-url https://download.pytorch.org/whl/cu128 # torch2.8.0 with cuda12.8
+pip install transformers datasets accelerate deepspeed peft denseweight reformer_pytorch evaluate huggingface_hub
+pip install numpy pandas matplotlib seaborn scikit_learn scipy sympy
+pip install Requests joblib tqdm
+pip install jupyter ipython notebook
+
+# pip install BatteryML
+# to install BatteryML, please refer to https://github.com/microsoft/BatteryML
+git clone https://github.com/microsoft/BatteryML.git
+cd path/to/BatteryML
+pip install -r requirements.txt
+pip install .
 ```
 
 ### Preprocessing [[tutorial](./assets/Preprocess.md)]

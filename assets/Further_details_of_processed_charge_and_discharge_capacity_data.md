@@ -4,8 +4,6 @@ Due to the inconsistency of charge and discharge capacity recording standards ac
 
 - **Specific note:** If developers want to use the charge and discharge capacity data, they need to check this file carefully and may need further preprocessing for charge and discharge capacity data in order to suit their specific task.
 
-
-
 ## **Recording standard table for each sub-dataset**
 
 | Index | Dataset  | Protocol type                    | Charge value        | Discharge value     | Save format |
@@ -27,8 +25,6 @@ Due to the inconsistency of charge and discharge capacity recording standards ac
 | 15    | ZN-coin  | **Discharge first, then charge** | 0-->positive number | 0-->positive number | Format 3    |
 | 16    | NA-ion   | Charge first, then discharge     | 0-->positive number | 0-->positive number | Format 2    |
 | 17    | CALB     | **Discharge first, then charge** | 0-->positive number | 0-->positive number | Format 3    |
-
-
 
 ## **Detailed explanations of different save formats**
 

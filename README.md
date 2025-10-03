@@ -77,6 +77,7 @@ pip install transformers datasets accelerate deepspeed peft denseweight reformer
 pip install numpy pandas matplotlib seaborn scikit_learn scipy sympy
 pip install Requests joblib tqdm
 pip install jupyter ipython notebook
+pip install wandb
 
 # pip install BatteryML
 # to install BatteryML, please refer to https://github.com/microsoft/BatteryML

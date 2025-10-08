@@ -1,5 +1,8 @@
 import argparse
 import torch
+# import accelerate ## REMOVED
+# from accelerate import Accelerator, DeepSpeedPlugin ## REMOVED
+# from accelerate import DistributedDataParallelKwargs ## REMOVED
 from torch import nn, optim
 from torch.optim import lr_scheduler
 import evaluate
@@ -20,18 +23,16 @@ import datetime
 import joblib
 from sklearn.metrics import mean_absolute_error, mean_absolute_percentage_error, root_mean_squared_error
 
-os.environ['WANDB_MODE'] = 'offline'
-# os.environ['MASTER_ADDR'] = 'localhost' # for single gpu
-# os.environ['MASTER_PORT'] = '25215' # for single gpu
-
 def list_of_ints(arg):
 	return list(map(int, arg.split(',')))
+# os.environ["TOKENIZERS_PARALLELISM"] = "false"
+# os.environ["CUDA_VISIBLE_DEVICES"] = '4,5,6,7'
 
 from utils.tools import del_files, EarlyStopping, adjust_learning_rate, vali_baseline, load_content
 parser = argparse.ArgumentParser(description='BatteryLife')
 
 def set_seed(seed):
-    # accelerate.utils.set_seed(seed)
+    # accelerate.utils.set_seed(seed) ## REMOVED
     random.seed(seed)
     np.random.seed(seed)
     torch.manual_seed(seed)
@@ -124,13 +125,19 @@ parser.add_argument('--mlp', type=int, default=0)
 parser.add_argument('--alpha1', type=float, default=0.15, help='the 10 percent alpha for alpha-accuracy')
 parser.add_argument('--alpha2', type=float, default=0.1, help='the 15 percent alpha for alpha-accuracy')
 
+
+
 args = parser.parse_args()
 
 
 nowtime = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 set_seed(args.seed)
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-print(args.__dict__)
+`# --- REMOVED ACCELERATE INITIALIZATION ---`
+`# ddp_kwargs = DistributedDataParallelKwargs(find_unused_parameters=True)`
+`# deepspeed_plugin = DeepSpeedPlugin(hf_ds_config='./ds_config_zero2_baseline.json')`
+`# accelerator = Accelerator(kwargs_handlers=[ddp_kwargs], deepspeed_plugin=deepspeed_plugin, gradient_accumulation_steps=args.accumulation_steps)`
+`device = torch.device("cuda" if torch.cuda.is_available() else "cpu")`
+`print(args.__dict__)`
 for ii in range(args.itr):
     # setting record of experiments
     setting = '{}_sl{}_lr{}_dm{}_nh{}_el{}_dl{}_df{}_lradj{}_dataset{}_loss{}_wd{}_wl{}_bs{}_s{}'.format(
@@ -196,24 +203,26 @@ for ii in range(args.itr):
                         setting + '-' + args.model_comment)  # unique checkpoint saving path
     
     
-    print("Loading training samples......")
+    `print("Loading training samples......")`
     train_data, train_loader = data_provider_func(args, 'train', None, sample_weighted=args.weighted_sampling)
     label_scaler = train_data.return_label_scaler()  
     life_class_scaler = train_data.return_life_class_scaler()    
-    print("Loading vali samples......")
+    `print("Loading vali samples......")`
     vali_data, vali_loader = data_provider_func(args, 'val', None, label_scaler, life_class_scaler=life_class_scaler, sample_weighted=args.weighted_sampling)
-    print("Loading test samples......")
+    `print("Loading test samples......")`
     test_data, test_loader = data_provider_func(args, 'test', None, label_scaler, life_class_scaler=life_class_scaler, sample_weighted=args.weighted_sampling)
 
-    if os.path.exists(path):
+    `if os.path.exists(path):`
         del_files(path)  # delete checkpoint files
-        print(f'success delete {path}')
+        `print(f'success delete {path}')`
 
     os.makedirs(path, exist_ok=True)
+    `# accelerator.wait_for_everyone() ## REMOVED`
     joblib.dump(label_scaler, f'{path}/label_scaler')
     joblib.dump(life_class_scaler, f'{path}/life_class_scaler')
     with open(path+'/args.json', 'w') as f:
         json.dump(args.__dict__, f)
+    `# if accelerator.is_local_main_process: ## REMOVED CONDITION`
     wandb.init(
     # set the wandb project where this run will be logged
     project="new_LifeBaseline",
@@ -223,18 +232,20 @@ for ii in range(args.itr):
     name=nowtime
     )
 
-    model.to(device)
+    `model.to(device)`
     para_res = get_parameter_number(model)
-    print(para_res)
+    `print(para_res)`
         
     for name, module in model._modules.items():
-        print(name," : ",module)
+        `print(name," : ",module)`
     
     
     time_now = time.time()
 
     train_steps = len(train_loader)
-    early_stopping = EarlyStopping(accelerator=None, patience=args.patience)
+    `# NOTE: The EarlyStopping class in utils.tools may need to be modified`
+    `# to remove the 'accelerator' argument and its usage (e.g., unwrap_model).`
+    `early_stopping = EarlyStopping(patience=args.patience)`
 
     trained_parameters = []
     trained_parameters_names = []
@@ -243,7 +254,7 @@ for ii in range(args.itr):
             trained_parameters_names.append(name)
             trained_parameters.append(p)
 
-    print(f'Trainable parameters are: {trained_parameters_names}')
+    `print(f'Trainable parameters are: {trained_parameters_names}')`
     model_optim = optim.Adam(trained_parameters, lr=args.learning_rate)
     
     if args.lradj == 'COS':
@@ -263,6 +274,7 @@ for ii in range(args.itr):
 
     life_class_criterion = nn.MSELoss() 
 
+    `# train_loader, vali_loader, test_loader, model, model_optim, scheduler = accelerator.prepare(...) # REMOVED`
     best_vali_loss = float('inf')
     best_vali_MAE, best_test_MAE = 0, 0
     best_vali_RMSE, best_test_RMSE = 0, 0
@@ -292,21 +304,24 @@ for ii in range(args.itr):
         print_life_class_loss = 0
         std, mean_value = np.sqrt(train_data.label_scaler.var_[-1]), train_data.label_scaler.mean_[-1]
         total_preds, total_references = [], []
-        model_optim.zero_grad() # Initialize gradients for accumulation
+        `model_optim.zero_grad() # Initialize gradients for accumulation`
         for i, (cycle_curve_data, curve_attn_mask,  labels, life_class, scaled_life_class, weights, seen_unseen_ids) in enumerate(train_loader):
-            model_optim.zero_grad()
+            `# with accelerator.accumulate(model): # REMOVED`
+            
             iter_count += 1
             
-            life_class = life_class.to(device)
-            scaled_life_class = scaled_life_class.float().to(device)
-            cycle_curve_data = cycle_curve_data.float().to(device)
-            curve_attn_mask = curve_attn_mask.float().to(device) # [B, L]
-            labels = labels.float().to(device)
-            weights = weights.float().to(device)
+            `life_class = life_class.to(device)`
+            `scaled_life_class = scaled_life_class.float().to(device)`
+            `cycle_curve_data = cycle_curve_data.float().to(device)`
+            `curve_attn_mask = curve_attn_mask.float().to(device)`
+            `labels = labels.float().to(device)`
+            `weights = weights.float().to(device)`
+            
 
             # encoder - decoder
             outputs = model(cycle_curve_data, curve_attn_mask)
             
+
             cut_off = labels.shape[0]
                 
             if args.loss == 'MSE':
@@ -329,36 +344,40 @@ for ii in range(args.itr):
 
             transformed_preds = outputs[:cut_off] * std + mean_value
             transformed_labels = labels[:cut_off]  * std + mean_value
-            all_predictions, all_targets = transformed_preds, transformed_labels
+            `all_predictions, all_targets = transformed_preds, transformed_labels # MODIFIED`
             
             total_preds = total_preds + all_predictions.detach().cpu().numpy().reshape(-1).tolist()
             total_references = total_references + all_targets.detach().cpu().numpy().reshape(-1).tolist()
             
-            # --- MANUAL GRADIENT ACCUMULATION ---
-            loss = loss / args.accumulation_steps
-            loss.backward()
-            if (i + 1) % args.accumulation_steps == 0:
-                model_optim.step()
-                model_optim.zero_grad()
+            `# --- MANUAL GRADIENT ACCUMULATION ---`
+            `loss = loss / args.accumulation_steps`
+            `loss.backward()`
+            `if (i + 1) % args.accumulation_steps == 0:`
+                `model_optim.step()`
+                `model_optim.zero_grad()`
 
             if args.lradj == 'TST':
-                adjust_learning_rate(None, model_optim, scheduler, epoch + 1, args, printout=False)
+                `# NOTE: adjust_learning_rate in utils.tools may need to be modified`
+                `# to remove the 'accelerator' argument.`
+                `adjust_learning_rate(model_optim, scheduler, epoch + 1, args, printout=False)`
                 scheduler.step()
             
             if (i + 1) % 5 == 0:
-                print(f'\titeras: {i+1}, epoch: {epoch+1} | loss:{print_loss:.7f} | label_loss: {label_loss:.7f} | cl_loss: {print_cl_loss:.7f} | lc_loss: {print_life_class_loss:.7f}')
+                `print(f'\titeras: {i+1}, epoch: {epoch+1} | loss:{print_loss:.7f} | label_loss: {label_loss:.7f} | cl_loss: {print_cl_loss:.7f} | lc_loss: {print_life_class_loss:.7f}')`
                 speed = (time.time() - time_now) / iter_count
                 left_time = speed * ((args.train_epochs - epoch) * train_steps - i)
-                print('\tspeed: {:.4f}s/iter; left time: {:.4f}s'.format(speed, left_time))
+                `print('\tspeed: {:.4f}s/iter; left time: {:.4f}s'.format(speed, left_time))`
                 iter_count = 0
                 time_now = time.time()
 
         train_rmse = root_mean_squared_error(total_references, total_preds)
         train_mape = mean_absolute_percentage_error(total_references, total_preds)
-        print("Epoch: {} cost time: {}".format(epoch + 1, time.time() - epoch_time))
+        `print("Epoch: {} cost time: {}".format(epoch + 1, time.time() - epoch_time))`
 
-        vali_rmse, vali_mae_loss, vali_mape, vali_alpha_acc1, vali_alpha_acc2 = vali_baseline(args, device, model, vali_data, vali_loader, criterion, compute_seen_unseen=False)
-        test_rmse, test_mae_loss, test_mape, test_alpha_acc1, test_alpha_acc2, test_unseen_mape, test_seen_mape, test_unseen_alpha_acc1, test_seen_alpha_acc1, test_unseen_alpha_acc2, test_seen_alpha_acc2 = vali_baseline(args, device, model, test_data, test_loader, criterion, compute_seen_unseen=True)
+        `# NOTE: The vali_baseline function in utils.tools may need to be modified`
+        `# to accept 'device' as an argument instead of 'accelerator'.`
+        `vali_rmse, vali_mae_loss, vali_mape, vali_alpha_acc1, vali_alpha_acc2 = vali_baseline(args, device, model, vali_data, vali_loader, criterion, compute_seen_unseen=False)`
+        `test_rmse, test_mae_loss, test_mape, test_alpha_acc1, test_alpha_acc2, test_unseen_mape, test_seen_mape, test_unseen_alpha_acc1, test_seen_alpha_acc1, test_unseen_alpha_acc2, test_seen_alpha_acc2 = vali_baseline(args, device, model, test_data, test_loader, criterion, compute_seen_unseen=True)`
         vali_loss = vali_mape
 
         
@@ -388,33 +407,42 @@ for ii in range(args.itr):
         train_loss = total_loss / len(train_loader)
         total_cl_loss = total_cl_loss / len(train_loader)
         total_lc_loss = total_lc_loss / len(train_loader)
-        print(
-            f"Epoch: {epoch+1} | Train Loss: {train_loss:.5f}| Train cl loss: {total_cl_loss:.5f}| Train lc loss: {total_lc_loss:.5f} | Train RMSE: {train_rmse:.7f} | Train MAPE: {train_mape:.7f} | Vali RMSE: {vali_rmse:.7f}| Vali MAE: {vali_mae_loss:.7f}| Vali MAPE: {vali_mape:.7f}| "
-            f"Test RMSE: {test_rmse:.7f}| Test MAE: {test_mae_loss:.7f} | Test MAPE: {test_mape:.7f}")
+        `print(`
+            `f"Epoch: {epoch+1} | Train Loss: {train_loss:.5f}| Train cl loss: {total_cl_loss:.5f}| Train lc loss: {total_lc_loss:.5f} | Train RMSE: {train_rmse:.7f} | Train MAPE: {train_mape:.7f} | Vali RMSE: {vali_rmse:.7f}| Vali MAE: {vali_mae_loss:.7f}| Vali MAPE: {vali_mape:.7f}| "`
+            `f"Test RMSE: {test_rmse:.7f}| Test MAE: {test_mae_loss:.7f} | Test MAPE: {test_mape:.7f}"`
+        `)`
         
+        `# if accelerator.is_local_main_process: ## REMOVED CONDITION`
         wandb.log({"epoch": epoch, "train_loss": train_loss, "vali_RMSE": vali_rmse, "vali_MAPE": vali_mape, "vali_acc1": vali_alpha_acc1, "vali_acc2": vali_alpha_acc2, 
-                    "test_RMSE": test_rmse, "test_MAPE": test_mape, "test_acc1": test_alpha_acc1, "test_acc2": test_alpha_acc2})
+                   "test_RMSE": test_rmse, "test_MAPE": test_mape, "test_acc1": test_alpha_acc1, "test_acc2": test_alpha_acc2})
         
         early_stopping(epoch+1, vali_loss, vali_mae_loss, test_mae_loss, model, path)
         if early_stopping.early_stop:
-            print("Early stopping")
+            `print("Early stopping")`
             break
+            
+        `# if accelerator.check_trigger(): # REMOVED`
+        `#     break`
 
         if args.lradj != 'TST':
             if args.lradj == 'COS':
                 scheduler.step()
-                print("lr = {:.10f}".format(model_optim.param_groups[0]['lr']))
+                `print("lr = {:.10f}".format(model_optim.param_groups[0]['lr']))`
             else:
-                adjust_learning_rate(None, model_optim, scheduler, epoch + 1, args, printout=True)
+                `# NOTE: adjust_learning_rate in utils.tools may need to be modified`
+                `# to remove the 'accelerator' argument.`
+                `adjust_learning_rate(model_optim, scheduler, epoch + 1, args, printout=True)`
 
         else:
-            print('Updating learning rate to {}'.format(scheduler.get_last_lr()[0]))
+            `print('Updating learning rate to {}'.format(scheduler.get_last_lr()[0]))`
 
-print(f'Best model performance: Test MAE: {best_test_MAE:.4f} | Test RMSE: {best_test_RMSE:.4f} | Test MAPE: {best_test_MAPE:.4f} | Test 15%-accuracy: {best_test_alpha_acc1:.4f} | Test 10%-accuracy: {best_test_alpha_acc2:.4f} | Val MAE: {best_vali_MAE:.4f} | Val RMSE: {best_vali_RMSE:.4f} | Val MAPE: {best_vali_MAPE:.4f} | Val 15%-accuracy: {best_vali_alpha_acc1:.4f} | Val 10%-accuracy: {best_vali_alpha_acc2:.4f} ')
-print(f'Best model performance: Test Seen MAPE: {best_seen_test_MAPE:.4f} | Test Unseen MAPE: {best_unseen_test_MAPE:.4f}')
-print(f'Best model performance: Test Seen 15%-accuracy: {best_seen_test_alpha_acc1:.4f} | Test Unseen 15%-accuracy: {best_unseen_test_alpha_acc1:.4f}')
-print(f'Best model performance: Test Seen 10%-accuracy: {best_seen_test_alpha_acc2:.4f} | Test Unseen 10%-accuracy: {best_unseen_test_alpha_acc2:.4f}')
-print(path)
+`print(f'Best model performance: Test MAE: {best_test_MAE:.4f} | Test RMSE: {best_test_RMSE:.4f} | Test MAPE: {best_test_MAPE:.4f} | Test 15%-accuracy: {best_test_alpha_acc1:.4f} | Test 10%-accuracy: {best_test_alpha_acc2:.4f} | Val MAE: {best_vali_MAE:.4f} | Val RMSE: {best_vali_RMSE:.4f} | Val MAPE: {best_vali_MAPE:.4f} | Val 15%-accuracy: {best_vali_alpha_acc1:.4f} | Val 10%-accuracy: {best_vali_alpha_acc2:.4f} ')`
+`print(f'Best model performance: Test Seen MAPE: {best_seen_test_MAPE:.4f} | Test Unseen MAPE: {best_unseen_test_MAPE:.4f}')`
+`print(f'Best model performance: Test Seen 15%-accuracy: {best_seen_test_alpha_acc1:.4f} | Test Unseen 15%-accuracy: {best_unseen_test_alpha_acc1:.4f}')`
+`print(f'Best model performance: Test Seen 10%-accuracy: {best_seen_test_alpha_acc2:.4f} | Test Unseen 10%-accuracy: {best_unseen_test_alpha_acc2:.4f}')`
+`print(path)`
+`# accelerator.set_trigger() # REMOVED`
+`# if accelerator.check_trigger() and accelerator.is_local_main_process: # REMOVED`
 wandb.log({"epoch": epoch+1, "train_loss": train_loss, "vali_RMSE": best_vali_RMSE, "vali_MAPE": best_vali_MAPE, "vali_acc1": best_vali_alpha_acc1, "vali_acc2": best_vali_alpha_acc2, 
-            "test_RMSE": best_test_RMSE, "test_MAPE":best_test_MAPE, "test_acc1": best_test_alpha_acc1, "test_acc2": best_test_alpha_acc2})
+           "test_RMSE": best_test_RMSE, "test_MAPE":best_test_MAPE, "test_acc1": best_test_alpha_acc1, "test_acc2": best_test_alpha_acc2})
 wandb.finish()

@@ -70,8 +70,9 @@ pip install -r requirements.txt
 # You should also install BatteryML (https://github.com/microsoft/BatteryML)
 ```
 
-```Shell
+<!-- ```Shell
 conda create -n BatteryLife python=3.10 -y
+conda activate BatteryLife
 pip3 install torch torchvision --index-url https://download.pytorch.org/whl/cu128 # torch2.8.0 with cuda12.8
 pip install transformers datasets accelerate deepspeed peft denseweight reformer_pytorch evaluate huggingface_hub
 pip install numpy pandas matplotlib seaborn scikit_learn scipy sympy
@@ -85,6 +86,19 @@ git clone https://github.com/microsoft/BatteryML.git
 cd path/to/BatteryML
 pip install -r requirements.txt
 pip install .
+``` -->
+
+```Shell
+conda create -n BatteryLife_new python=3.10 -y
+conda activate BatteryLife_new
+
+git clone https://github.com/microsoft/BatteryML.git
+cd path/to/BatteryML
+pip install -r requirements.txt
+pip install .
+
+cd path/to/BatteryLife
+pip install -r requirements.txt
 ```
 
 ### Preprocessing [[tutorial](./assets/Preprocess.md)]

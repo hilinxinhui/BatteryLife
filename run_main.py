@@ -3,7 +3,6 @@ import torch
 import accelerate
 from accelerate import Accelerator, DeepSpeedPlugin
 from accelerate import DistributedDataParallelKwargs
-import torch.distributed as dist # for single gpu
 from torch import nn, optim
 from torch.optim import lr_scheduler
 import evaluate
@@ -23,10 +22,6 @@ import json
 import datetime
 import joblib
 from sklearn.metrics import mean_absolute_error, mean_absolute_percentage_error, root_mean_squared_error
-
-os.environ['WANDB_MODE'] = 'offline'
-os.environ['MASTER_ADDR'] = 'localhost' # for single gpu
-os.environ['MASTER_PORT'] = '25215' # for single gpu
 
 def list_of_ints(arg):
 	return list(map(int, arg.split(',')))
@@ -130,6 +125,11 @@ parser.add_argument('--mlp', type=int, default=0)
 parser.add_argument('--alpha1', type=float, default=0.15, help='the 10 percent alpha for alpha-accuracy')
 parser.add_argument('--alpha2', type=float, default=0.1, help='the 15 percent alpha for alpha-accuracy')
 
+os.environ['WANDB_API_KEY'] = 'dd945432ebf00aa8fe06e1c4e02bd411623dbdd1'
+os.environ['WANDB_MODE'] = 'offline'
+# os.environ['MASTER_ADDR'] = 'localhost' # for single gpu
+# os.environ['MASTER_PORT'] = '25215' # for single gpu
+
 args = parser.parse_args()
 
 
@@ -218,7 +218,6 @@ for ii in range(args.itr):
         accelerator.print(f'success delete {path}')
 
     os.makedirs(path, exist_ok=True)
-    dist.init_process_group(backend='nccl', rank=0, world_size=1, device_id=0) # for single gpu
     accelerator.wait_for_everyone()
     joblib.dump(label_scaler, f'{path}/label_scaler')
     joblib.dump(life_class_scaler, f'{path}/life_class_scaler')

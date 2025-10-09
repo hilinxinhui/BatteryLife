@@ -1,10 +1,10 @@
 model_name=CPTransformer
-dataset=MIX_large # MIX_large
+dataset=CALCE # MIX_large
 train_epochs=100
 early_cycle_threshold=100
 learning_rate=0.00005
 master_port=25215
-num_process=2
+num_process=1
 batch_size=16
 n_heads=4
 seq_len=1
@@ -21,13 +21,13 @@ lradj=constant
 loss=MSE
 seed=2021
 
-checkpoints=/path/to/your/saving/folder # the save path of checkpoints
+checkpoints=./checkpoints # the save path of checkpoints
 data=Dataset_original
 root_path=./dataset
 comment='CPTransformer'
 task_name=classification
 
-CUDA_VISIBLE_DEVICES=0,1 accelerate launch --multi_gpu  --num_processes $num_process --main_process_port $master_port run_main.py \
+CUDA_VISIBLE_DEVICES=0 accelerate launch --num_processes $num_process --main_process_port $master_port run_main.py \
   --task_name $task_name \
   --data $data \
   --is_training 1 \

@@ -9,3 +9,9 @@ dev/
 .qwen/
 results/
 analysis/
+
+dataset/
+check_data_scripts/logs
+check_data_scripts/plots
+extracted_features/
+extracted_features_test/

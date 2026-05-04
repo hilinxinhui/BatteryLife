@@ -1,0 +1,182 @@
+{
+  "XJTU": {
+    "chemistry": "NCM",
+    "cutoff_voltage": 4.2,
+    "has_cv": true,
+    "cc_cv_split": {"mode": "voltage_threshold", "threshold": 4.199},
+    "cc_window": {"voltage_min": 3.6, "voltage_max": 4.19},
+    "cv_current_window": null,
+    "pre_filter": null,
+    "notes": "Directly from XJTUBatteryClass.py"
+  },
+  "MATR": {
+    "chemistry": "LTO-like",
+    "cutoff_voltage": 3.6,
+    "has_cv": true,
+    "cc_cv_split": {"mode": "voltage_threshold", "threshold": 3.595},
+    "cc_window": {"voltage_min": 3.4, "voltage_max": 3.595},
+    "cv_current_window": {"current_min": 0.1, "current_max": 0.5},
+    "pre_filter": {"mode": "charge_capacity_ratio", "ratio_threshold": 0.79},
+    "notes": "MIT in PINN4SOH. SOC>80% pre-filter required."
+  },
+  "HUST": {
+    "chemistry": "LTO",
+    "cutoff_voltage": 3.6,
+    "has_cv": true,
+    "cc_cv_split": {"mode": "voltage_threshold", "threshold": 3.595},
+    "cc_window": {"voltage_min": 3.4, "voltage_max": 3.595},
+    "cv_current_window": {"current_min": 0.05, "current_max": 0.5},
+    "pre_filter": {"mode": "current_threshold", "current_max": 1.5, "description": "exclude 5C fast-charge stage"},
+    "notes": "No Status field in BatteryLife. Use I>1.5A filter to exclude 5C stage."
+  },
+  "Tongji": {
+    "chemistry": "NCM",
+    "cutoff_voltage": 4.2,
+    "has_cv": true,
+    "cc_cv_split": {"mode": "voltage_threshold", "threshold": 4.199},
+    "cc_window": {"voltage_min": 4.0, "voltage_max": 4.2},
+    "cv_current_window": {"current_min": 1.0, "current_max": 2.0},
+    "pre_filter": null,
+    "notes": "TJU in PINN4SOH. BatteryLife has no control/mA or control/V fields; fallback to voltage_threshold."
+  },
+  "CALCE": {
+    "chemistry": "NCA/LCO",
+    "cutoff_voltage": 4.2,
+    "has_cv": true,
+    "cc_cv_split": {"mode": "voltage_threshold", "threshold": 4.199},
+    "cc_window": {"voltage_min": 3.6, "voltage_max": 4.19},
+    "cv_current_window": null,
+    "pre_filter": null,
+    "notes": "Very short CV phase (~44 points)"
+  },
+  "SNL": {
+    "chemistry": "LFP",
+    "cutoff_voltage": 3.6,
+    "has_cv": true,
+    "cc_cv_split": {"mode": "voltage_threshold", "threshold": 3.595},
+    "cc_window": {"voltage_min": 3.4, "voltage_max": 3.595},
+    "cv_current_window": null,
+    "pre_filter": null,
+    "notes": "LFP, same window as MATR"
+  },
+  "CALB": {
+    "chemistry": "High-voltage NCM",
+    "cutoff_voltage": 4.35,
+    "has_cv": true,
+    "cc_cv_split": {"mode": "voltage_threshold", "threshold": 4.345},
+    "cc_window": {"voltage_min": 3.85, "voltage_max": 4.345},
+    "cv_current_window": null,
+    "pre_filter": null,
+    "notes": "V_cutoff - 0.5 to V_cutoff - 0.005"
+  },
+  "HNEI": {
+    "chemistry": "High-voltage NMC",
+    "cutoff_voltage": 4.30,
+    "has_cv": true,
+    "cc_cv_split": {"mode": "voltage_threshold", "threshold": 4.295},
+    "cc_window": {"voltage_min": 3.80, "voltage_max": 4.295},
+    "cv_current_window": null,
+    "pre_filter": null,
+    "notes": "V_cutoff - 0.5 to V_cutoff - 0.005"
+  },
+  "Stanford": {
+    "chemistry": "High-voltage NCM",
+    "cutoff_voltage": 4.40,
+    "has_cv": true,
+    "cc_cv_split": {"mode": "voltage_threshold", "threshold": 4.395},
+    "cc_window": {"voltage_min": 3.90, "voltage_max": 4.395},
+    "cv_current_window": null,
+    "pre_filter": null,
+    "notes": "V_cutoff - 0.5 to V_cutoff - 0.005"
+  },
+  "Stanford_2": {
+    "chemistry": "High-voltage NCM",
+    "cutoff_voltage": 4.40,
+    "has_cv": true,
+    "cc_cv_split": {"mode": "voltage_threshold", "threshold": 4.395},
+    "cc_window": {"voltage_min": 3.90, "voltage_max": 4.395},
+    "cv_current_window": null,
+    "pre_filter": null,
+    "notes": "Same as Stanford"
+  },
+  "RWTH": {
+    "chemistry": "NMC",
+    "cutoff_voltage": 3.9,
+    "has_cv": true,
+    "cc_cv_split": {"mode": "voltage_threshold", "threshold": 3.895},
+    "cc_window": {"voltage_min": 3.4, "voltage_max": 3.895},
+    "cv_current_window": null,
+    "pre_filter": null,
+    "notes": "SOC interval [0.2, 0.8]"
+  },
+  "ISU_ILCC": {
+    "chemistry": "NCM",
+    "cutoff_voltage": 4.2,
+    "has_cv": true,
+    "cc_cv_split": {"mode": "voltage_threshold", "threshold": 4.199},
+    "cc_window": {"voltage_min": null, "voltage_max": 4.19, "dynamic_min": "max(3.6, V_start + 0.1)"},
+    "cv_current_window": null,
+    "pre_filter": null,
+    "notes": "SOC interval [0.46, 1.0]. dynamic_min used: max(3.6, cycle_start_voltage + 0.1)"
+  },
+  "MICH": {
+    "chemistry": "NMC",
+    "cutoff_voltage": 4.2,
+    "has_cv": true,
+    "cc_cv_split": {"mode": "voltage_threshold", "threshold": 4.199},
+    "cc_window": {"voltage_min": 3.6, "voltage_max": 4.19},
+    "cv_current_window": null,
+    "pre_filter": null,
+    "notes": "Standard CC-CV"
+  },
+  "MICH_EXP": {
+    "chemistry": "NMC",
+    "cutoff_voltage": 4.2,
+    "has_cv": true,
+    "cc_cv_split": {"mode": "voltage_threshold", "threshold": 4.199},
+    "cc_window": {"voltage_min": 3.6, "voltage_max": 4.19},
+    "cv_current_window": null,
+    "pre_filter": null,
+    "notes": "Standard CC-CV"
+  },
+  "SDU": {
+    "chemistry": "NCM",
+    "cutoff_voltage": 4.2,
+    "has_cv": true,
+    "cc_cv_split": {"mode": "voltage_threshold", "threshold": 4.199},
+    "cc_window": {"voltage_min": 3.6, "voltage_max": 4.19},
+    "cv_current_window": null,
+    "pre_filter": null,
+    "notes": "Standard CC-CV"
+  },
+  "UL_PUR": {
+    "chemistry": "NCA",
+    "cutoff_voltage": 4.2,
+    "has_cv": true,
+    "cc_cv_split": {"mode": "voltage_threshold", "threshold": 4.199},
+    "cc_window": {"voltage_min": 3.6, "voltage_max": 4.19},
+    "cv_current_window": null,
+    "pre_filter": null,
+    "notes": "Standard CC-CV"
+  },
+  "NA-ion": {
+    "chemistry": "Na-ion",
+    "cutoff_voltage": 4.0,
+    "has_cv": false,
+    "cc_cv_split": null,
+    "cc_window": {"voltage_min": null, "voltage_max": 3.99, "dynamic_min": "V_start + 0.1"},
+    "cv_current_window": null,
+    "pre_filter": null,
+    "notes": "Pure CC charging. All 8 CV features = 0."
+  },
+  "ZN-coin": {
+    "chemistry": "Zn-coin",
+    "cutoff_voltage": 1.8,
+    "has_cv": false,
+    "cc_cv_split": null,
+    "cc_window": {"voltage_min": null, "voltage_max": 1.79, "dynamic_min": "V_start + 0.1"},
+    "cv_current_window": null,
+    "pre_filter": null,
+    "notes": "Pure CC charging. All 8 CV features = 0."
+  }
+}

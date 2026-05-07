@@ -49,6 +49,8 @@ datasetName2ids = {
     'NA-ion':27,
     'NA-ion42':28,
     'NA-ion2024':29,
+    'Stanford_2':30,
+    'SDU':31,
 }
 def my_collate_fn_withId(samples):
     cycle_curve_data = torch.vstack([i['cycle_curve_data'].unsqueeze(0) for i in samples])
@@ -105,7 +107,9 @@ class Dataset_original(Dataset):
         self.need_keys = ['current_in_A', 'voltage_in_V', 'charge_capacity_in_Ah', 'discharge_capacity_in_Ah', 'time_in_s']
         self.aug_helper = BatchAugmentation_battery_revised()
         assert flag in ['train', 'test', 'val']
-        if self.dataset == 'exp':
+        if self.dataset in self.benchmark_task_names():
+            self.train_files, self.val_files, self.test_files = self.build_benchmark_split(self.dataset)
+        elif self.dataset == 'exp':
             self.train_files = split_recorder.Stanford_train_files[:3]
             self.val_files = split_recorder.Tongji_val_files[:2] + split_recorder.HUST_val_files[:2]
             self.test_files =  split_recorder.Tongji_test_files[:2] + split_recorder.HUST_test_files[:2]
@@ -223,7 +227,7 @@ class Dataset_original(Dataset):
             elif self.dataset == 'NAion2024':
                 self.unseen_seen_record = json.load(open(f'{self.root_path}/seen_unseen_labels/cal_for_test_NA2024.json'))
             else:
-                self.unseen_seen_record = json.load(open(f'{self.root_path}/seen_unseen_labels/cal_for_test.json'))
+                self.unseen_seen_record = self.load_seen_unseen_record()
             # self.unseen_seen_record = json.load(open(f'{self.root_path}/cal_for_test.json'))
         
         self.total_charge_discharge_curves, self.total_curve_attn_masks, self.total_labels, self.unique_labels, self.class_labels, self.total_dataset_ids, self.total_cj_aug_charge_discharge_curves, self.total_seen_unseen_IDs = self.read_data()
@@ -333,7 +337,7 @@ class Dataset_original(Dataset):
 
         for file_name in tqdm(self.files):
             if file_name not in split_recorder.MICH_EXP_test_files and file_name not in split_recorder.MICH_EXP_train_files and file_name not in split_recorder.MICH_EXP_val_files:
-                dataset_id = datasetName2ids[file_name.split('_')[0]]
+                dataset_id = self.get_dataset_id(file_name)
             else:
                 dataset_id = datasetName2ids['MICH_EXP']
 
@@ -358,7 +362,7 @@ class Dataset_original(Dataset):
             # total_center_vector_indices += [center_vector_index for _ in range(len(labels))]
             unique_labels.append(eol)
             if self.flag == 'test':
-                seen_unseen_id = self.unseen_seen_record[file_name]
+                seen_unseen_id = self.unseen_seen_record.get(file_name, 'seen')
                 if seen_unseen_id == 'unseen':
                     total_seen_unseen_IDs += [0 for _ in range(len(labels))]
                 elif seen_unseen_id == 'seen':
@@ -369,6 +373,121 @@ class Dataset_original(Dataset):
                 total_seen_unseen_IDs += [1 for _ in range(len(labels))] # 1 indicates seen. This is not used on training or evaluation set
 
         return total_charge_discharge_curves, total_curve_attn_masks, np.array(total_labels), unique_labels, class_labels, total_dataset_ids, total_cj_aug_charge_discharge_curves, total_seen_unseen_IDs
+
+    @staticmethod
+    def benchmark_task_names():
+        return {
+            'CALB', 'CALCE', 'HNEI', 'HUST', 'ISU_ILCC', 'MATR', 'MICH',
+            'MICH_EXP', 'NA-ion', 'RWTH', 'SDU', 'SNL', 'Stanford_2',
+            'Tongji', 'UL_PUR', 'XJTU', 'ZN-coin', 'MIX_large'
+        }
+
+    @staticmethod
+    def benchmark_constituents():
+        return [
+            'CALB', 'CALCE', 'HNEI', 'HUST', 'ISU_ILCC', 'MATR', 'MICH',
+            'MICH_EXP', 'NA-ion', 'RWTH', 'SDU', 'SNL', 'Stanford_2',
+            'Tongji', 'UL_PUR', 'XJTU', 'ZN-coin'
+        ]
+
+    @staticmethod
+    def dataset_dir_name(dataset_name):
+        return {
+            'ISU_ILCC': 'ISU_ILCC',
+            'Stanford_2': 'Stanford_2',
+        }.get(dataset_name, dataset_name)
+
+    @staticmethod
+    def label_file_name(dataset_name):
+        return {
+            'ISU_ILCC': 'ISU-ILCC_labels.json',
+            'UL_PUR': 'UL-PUR_labels.json',
+            'MICH': 'MICH_labels.json',
+        }.get(dataset_name, f'{dataset_name}_labels.json')
+
+    @staticmethod
+    def label_key(dataset_name, file_name):
+        if dataset_name == 'Tongji':
+            return file_name.replace('--', '-#')
+        return file_name
+
+    @staticmethod
+    def split_files(files, seed=2021):
+        files = sorted(files)
+        rng = random.Random(seed)
+        rng.shuffle(files)
+        train_end = int(len(files) * 0.6)
+        val_end = train_end + int(len(files) * 0.2)
+        return files[:train_end], files[train_end:val_end], files[val_end:]
+
+    def load_labels(self, dataset_name):
+        label_path = os.path.join(self.root_path, 'Life labels', self.label_file_name(dataset_name))
+        with open(label_path) as f:
+            return json.load(f)
+
+    def labeled_files(self, dataset_name):
+        if dataset_name == 'Stanford_2':
+            labels = self.load_labels('Stanford_2')
+            stanford2_dir = os.path.join(self.root_path, 'Stanford_2')
+            files = [
+                file_name for file_name in os.listdir(stanford2_dir)
+                if file_name.endswith('.pkl') and file_name in labels
+            ]
+
+            stanford_labels = self.load_labels('Stanford')
+            stanford_dir = os.path.join(self.root_path, 'Stanford')
+            ref_files = [
+                f'Stanford_Nova_Regular_Ref_{idx}.pkl'
+                for idx in (100, 101, 102)
+            ]
+            files += [
+                file_name for file_name in ref_files
+                if os.path.exists(os.path.join(stanford_dir, file_name)) and file_name in stanford_labels
+            ]
+            return sorted(files)
+
+        labels = self.load_labels(dataset_name)
+        data_dir = os.path.join(self.root_path, self.dataset_dir_name(dataset_name))
+        return sorted([
+            file_name for file_name in os.listdir(data_dir)
+            if file_name.endswith('.pkl') and self.label_key(dataset_name, file_name) in labels
+        ])
+
+    def build_benchmark_split(self, dataset_name):
+        if dataset_name == 'MIX_large':
+            train_files, val_files, test_files = [], [], []
+            for constituent in self.benchmark_constituents():
+                train, val, test = self.build_benchmark_split(constituent)
+                train_files += train
+                val_files += val
+                test_files += test
+            return train_files, val_files, test_files
+
+        return self.split_files(self.labeled_files(dataset_name))
+
+    def load_seen_unseen_record(self):
+        seen_unseen_path = os.path.join(self.root_path, 'seen_unseen_labels', 'cal_for_test.json')
+        if os.path.exists(seen_unseen_path):
+            with open(seen_unseen_path) as f:
+                return json.load(f)
+        return {}
+
+    def uses_stanford_2_regular_file(self, file_name):
+        if 'Ref_' in file_name:
+            return False
+        if self.dataset not in ['Stanford_2', 'MIX_large']:
+            return False
+        return os.path.exists(os.path.join(self.root_path, 'Stanford_2', file_name))
+
+    def uses_mich_exp_file(self, file_name):
+        return file_name.startswith('MICH') and os.path.exists(os.path.join(self.root_path, 'MICH_EXP', file_name))
+
+    def get_dataset_id(self, file_name):
+        if self.uses_mich_exp_file(file_name):
+            return datasetName2ids['MICH_EXP']
+        if file_name.startswith('Stanford') and self.uses_stanford_2_regular_file(file_name):
+            return datasetName2ids['Stanford_2']
+        return datasetName2ids[file_name.split('_')[0]]
 
     
     def read_cell_data_according_to_prefix(self, file_name):
@@ -388,9 +507,10 @@ class Dataset_original(Dataset):
         elif prefix.startswith('HNEI'):
             data =  pickle.load(open(f'{self.root_path}/HNEI/{file_name}', 'rb'))
         elif prefix.startswith('MICH'):
-            if not os.path.isdir(f'{self.root_path}/total_MICH/'):
-                self.merge_MICH(f'{self.root_path}/total_MICH/')
-            data =  pickle.load(open(f'{self.root_path}/total_MICH/{file_name}', 'rb'))
+            if self.uses_mich_exp_file(file_name):
+                data =  pickle.load(open(f'{self.root_path}/MICH_EXP/{file_name}', 'rb'))
+            else:
+                data =  pickle.load(open(f'{self.root_path}/MICH/{file_name}', 'rb'))
         elif prefix.startswith('RWTH'):
             data =  pickle.load(open(f'{self.root_path}/RWTH/{file_name}', 'rb'))  
         elif prefix.startswith('UL-PUR'):
@@ -402,9 +522,14 @@ class Dataset_original(Dataset):
         elif prefix.startswith('Tongji'):
             data =  pickle.load(open(f'{self.root_path}/Tongji/{file_name}', 'rb'))
         elif prefix.startswith('Stanford'):
-            data =  pickle.load(open(f'{self.root_path}/Stanford/{file_name}', 'rb'))
+            if self.uses_stanford_2_regular_file(file_name):
+                data =  pickle.load(open(f'{self.root_path}/Stanford_2/{file_name}', 'rb'))
+            else:
+                data =  pickle.load(open(f'{self.root_path}/Stanford/{file_name}', 'rb'))
         elif prefix.startswith('ISU-ILCC'):
             data =  pickle.load(open(f'{self.root_path}/ISU_ILCC/{file_name}', 'rb'))
+        elif prefix.startswith('SDU'):
+            data =  pickle.load(open(f'{self.root_path}/SDU/{file_name}', 'rb'))
         elif prefix.startswith('XJTU'):
             data =  pickle.load(open(f'{self.root_path}/XJTU/{file_name}', 'rb'))
         elif prefix.startswith('ZN-coin'):
@@ -415,11 +540,15 @@ class Dataset_original(Dataset):
             data =  pickle.load(open(f'{self.root_path}/NA-ion/{file_name}', 'rb'))
         
         if prefix == 'MICH':
-            with open(f'{self.root_path}/Life labels/total_MICH_labels.json') as f:
+            label_file = 'MICH_EXP_labels.json' if self.uses_mich_exp_file(file_name) else 'MICH_labels.json'
+            with open(f'{self.root_path}/Life labels/{label_file}') as f:
                 life_labels = json.load(f)
         elif prefix.startswith('Tongji'):
             file_name = file_name.replace('--', '-#')
             with open(f'{self.root_path}/Life labels/Tongji_labels.json') as f:
+                life_labels = json.load(f)
+        elif prefix.startswith('Stanford') and self.uses_stanford_2_regular_file(file_name):
+            with open(f'{self.root_path}/Life labels/Stanford_2_labels.json') as f:
                 life_labels = json.load(f)
         else:
             with open(f'{self.root_path}/Life labels/{prefix}_labels.json') as f:

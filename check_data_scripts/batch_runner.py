@@ -18,7 +18,7 @@ import sys
 from pathlib import Path
 
 SCRIPT_DIR = Path(__file__).parent.resolve()
-DEFAULT_DATASET_ROOT = SCRIPT_DIR / '../dataset'
+DEFAULT_DATASET_ROOT = Path('/home/lxh/Desktop/datasets/BatteryLife/v11')
 
 # (script_name, has_plot_output, plot_subdir_name)
 CHECKS = {

@@ -13,5 +13,7 @@ analysis/
 dataset/
 check_data_scripts/logs
 check_data_scripts/plots
+check_data_scripts/logs_v11
+check_data_scripts/plots_v11
 # extracted_features/
 extracted_features_test/

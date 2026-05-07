@@ -25,7 +25,7 @@ from tqdm import tqdm
 
 
 SCRIPT_DIR = Path(__file__).parent.resolve()
-DEFAULT_DATASET = SCRIPT_DIR / '../dataset/SNL'
+DEFAULT_DATASET = Path('/home/lxh/Desktop/datasets/BatteryLife/v11/SNL')
 DEFAULT_LOG_DIR = SCRIPT_DIR / 'logs'
 DEFAULT_PLOT_DIR = SCRIPT_DIR / 'plots'
 

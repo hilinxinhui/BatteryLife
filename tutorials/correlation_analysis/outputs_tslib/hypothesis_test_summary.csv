@@ -1,0 +1,33 @@
+level,target,x,y,spearman,n,interpretation
+feature_error_sensitivity,RUL,feature_truth_abs_spearman,mean_abs_error_sensitivity,0.15520666659890445,1680,正值表示越相关的特征越容易成为误差敏感方向；负值才支持“相关性越高误差越小”。
+feature_error_sensitivity,SOH,feature_truth_abs_spearman,mean_abs_error_sensitivity,0.12603886649494994,1680,正值表示越相关的特征越容易成为误差敏感方向；负值才支持“相关性越高误差越小”。
+dataset_model_performance,RUL,mean_feature_truth_corr,mae,0.011429037651905226,120,误差指标期望负相关，拟合质量指标 r2/pearson_r 期望正相关。
+dataset_model_performance,RUL,mean_feature_truth_corr,mape,-0.6104778648212791,120,误差指标期望负相关，拟合质量指标 r2/pearson_r 期望正相关。
+dataset_model_performance,RUL,mean_feature_truth_corr,rmse,0.024879063669086376,120,误差指标期望负相关，拟合质量指标 r2/pearson_r 期望正相关。
+dataset_model_performance,RUL,mean_feature_truth_corr,r2,0.602637823749088,120,误差指标期望负相关，拟合质量指标 r2/pearson_r 期望正相关。
+dataset_model_performance,RUL,mean_feature_truth_corr,pearson_r,0.48393146605948606,109,误差指标期望负相关，拟合质量指标 r2/pearson_r 期望正相关。
+dataset_model_performance,RUL,max_feature_truth_corr,mae,-0.1760350555409305,120,误差指标期望负相关，拟合质量指标 r2/pearson_r 期望正相关。
+dataset_model_performance,RUL,max_feature_truth_corr,mape,-0.7389848491512379,120,误差指标期望负相关，拟合质量指标 r2/pearson_r 期望正相关。
+dataset_model_performance,RUL,max_feature_truth_corr,rmse,-0.1604943519044984,120,误差指标期望负相关，拟合质量指标 r2/pearson_r 期望正相关。
+dataset_model_performance,RUL,max_feature_truth_corr,r2,0.7642123590901995,120,误差指标期望负相关，拟合质量指标 r2/pearson_r 期望正相关。
+dataset_model_performance,RUL,max_feature_truth_corr,pearson_r,0.6893940184175216,109,误差指标期望负相关，拟合质量指标 r2/pearson_r 期望正相关。
+dataset_model_performance,RUL,top3_feature_truth_corr,mae,0.016133062295219876,120,误差指标期望负相关，拟合质量指标 r2/pearson_r 期望正相关。
+dataset_model_performance,RUL,top3_feature_truth_corr,mape,-0.665985355612392,120,误差指标期望负相关，拟合质量指标 r2/pearson_r 期望正相关。
+dataset_model_performance,RUL,top3_feature_truth_corr,rmse,0.03369475429692791,120,误差指标期望负相关，拟合质量指标 r2/pearson_r 期望正相关。
+dataset_model_performance,RUL,top3_feature_truth_corr,r2,0.6862300838921387,120,误差指标期望负相关，拟合质量指标 r2/pearson_r 期望正相关。
+dataset_model_performance,RUL,top3_feature_truth_corr,pearson_r,0.5374232999803408,109,误差指标期望负相关，拟合质量指标 r2/pearson_r 期望正相关。
+dataset_model_performance,SOH,mean_feature_truth_corr,mae,0.10442934708158524,120,误差指标期望负相关，拟合质量指标 r2/pearson_r 期望正相关。
+dataset_model_performance,SOH,mean_feature_truth_corr,mape,0.13261865031448564,120,误差指标期望负相关，拟合质量指标 r2/pearson_r 期望正相关。
+dataset_model_performance,SOH,mean_feature_truth_corr,rmse,0.07690209176144767,120,误差指标期望负相关，拟合质量指标 r2/pearson_r 期望正相关。
+dataset_model_performance,SOH,mean_feature_truth_corr,r2,-0.12449985222639444,120,误差指标期望负相关，拟合质量指标 r2/pearson_r 期望正相关。
+dataset_model_performance,SOH,mean_feature_truth_corr,pearson_r,-0.13871959397504297,115,误差指标期望负相关，拟合质量指标 r2/pearson_r 期望正相关。
+dataset_model_performance,SOH,max_feature_truth_corr,mae,-0.5997457197091243,120,误差指标期望负相关，拟合质量指标 r2/pearson_r 期望正相关。
+dataset_model_performance,SOH,max_feature_truth_corr,mape,-0.3924550337603919,120,误差指标期望负相关，拟合质量指标 r2/pearson_r 期望正相关。
+dataset_model_performance,SOH,max_feature_truth_corr,rmse,-0.5599880003163685,120,误差指标期望负相关，拟合质量指标 r2/pearson_r 期望正相关。
+dataset_model_performance,SOH,max_feature_truth_corr,r2,0.6318724657916138,120,误差指标期望负相关，拟合质量指标 r2/pearson_r 期望正相关。
+dataset_model_performance,SOH,max_feature_truth_corr,pearson_r,0.647917660631421,115,误差指标期望负相关，拟合质量指标 r2/pearson_r 期望正相关。
+dataset_model_performance,SOH,top3_feature_truth_corr,mae,-0.08394070641292588,120,误差指标期望负相关，拟合质量指标 r2/pearson_r 期望正相关。
+dataset_model_performance,SOH,top3_feature_truth_corr,mape,0.07279042577692078,120,误差指标期望负相关，拟合质量指标 r2/pearson_r 期望正相关。
+dataset_model_performance,SOH,top3_feature_truth_corr,rmse,-0.07665817937253505,120,误差指标期望负相关，拟合质量指标 r2/pearson_r 期望正相关。
+dataset_model_performance,SOH,top3_feature_truth_corr,r2,0.10268711573220946,120,误差指标期望负相关，拟合质量指标 r2/pearson_r 期望正相关。
+dataset_model_performance,SOH,top3_feature_truth_corr,pearson_r,0.032797337647390144,115,误差指标期望负相关，拟合质量指标 r2/pearson_r 期望正相关。

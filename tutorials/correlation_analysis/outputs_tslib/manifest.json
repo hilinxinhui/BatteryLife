@@ -1,0 +1,30 @@
+{
+  "features_root": "/Users/lxh/Desktop/codes/SOHbenchmark_TSLib/dataset/BatteryLife",
+  "results_root": "/Users/lxh/Desktop/codes/SOHbenchmark_TSLib/results",
+  "max_rows_per_dataset": 250000,
+  "exclude_tasks": [
+    "MIX_large"
+  ],
+  "feature_columns": [
+    "voltage_mean",
+    "voltage_std",
+    "voltage_kurtosis",
+    "voltage_skewness",
+    "CC_Q",
+    "CC_charge_time",
+    "voltage_slope",
+    "voltage_entropy",
+    "current_mean",
+    "current_std",
+    "current_kurtosis",
+    "current_skewness",
+    "CV_Q",
+    "CV_charge_time",
+    "current_slope",
+    "current_entropy"
+  ],
+  "target_columns": [
+    "SOH",
+    "RUL"
+  ]
+}

@@ -1,0 +1,2 @@
+cycle_number,relax_var,relax_ske,relax_max,relax_min,relax_mean,relax_kur,relax_duration_s,relax_points,relax_start_voltage,relax_end_voltage,relax_voltage_delta,window_s,window_points,SOH,RUL,discharge_capacity_in_Ah
+356,1.7081518850871385e-08,-0.1371708405776111,3.6002507,3.5997663,3.600025566292134,-1.0172579666512092,304.998799999943,91,3.6001077,3.6002049,9.719999999990848e-05,300.0,89,0.9115863636363636,81.0,1.002745

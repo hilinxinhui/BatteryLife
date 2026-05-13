@@ -1,156 +1,130 @@
-# 电压弛豫特征提取流水线
+# 电压弛豫特征提取
 
-这个目录用于把 Zhu 等人在 Nature Communications 2022 论文
-**Data-driven capacity estimation of commercial lithium-ion batteries from voltage relaxation**
-中提出的满充后电压弛豫特征，扩展到 BatteryLife 仓库中的 `.pkl`
-格式数据集。
+本目录将 Zhu 等人（2022, *Nature Communications*）提出的满充后电压弛豫特征，扩展到 BatteryLife 仓库的 `.pkl` 格式数据集，验证其对 SOH / RUL 估计的有效性。
 
-流水线分为三个阶段：
+---
 
-1. 审计每个 `.pkl` 电芯文件，判断每个 cycle 是否存在 rest 段，以及是否存在符合论文定义的满充后 relaxation 段。
-2. 在可用 relaxation 段上提取电压统计特征。
-3. 分析 relaxation 特征与 `SOH`、`RUL`、放电容量之间的相关性。
+## 1. 分析策略
 
-如果需要从原始 `.pkl` 重新生成结果，从仓库根目录运行：
+为兼顾覆盖率与跨数据集可比性，输出两套独立结果：
 
-```bash
-python relaxation/run_relaxation_pipeline.py --output-dir relaxation/_work
-python relaxation/build_cell_dataset.py --input-dir relaxation/_work --output-dir relaxation
-```
+- **`full_window`**（主分析）：使用每个 cycle 完整的可用 relaxation 段。覆盖率最高，回答的问题是：
+  > **只要数据集中存在满充后弛豫，这些特征是否对 SOH 估计有用？**
 
-`relaxation/_work` 是中间结果目录；确认 `full/`、`fixed/`、`summary/`
-生成无误后可以删除。
+- **`fixed_windows`**（补充分析）：从 relaxation 起点截取固定时长窗口（300 s / 600 s / 1800 s）。回答的问题是：
+  > **在相同观测时长下，不同数据集的弛豫特征表现如何？**
 
-## 分析策略
+> ⚠️ 两类结果回答的问题不同，不要在同一张主表中混用。
 
-为了尽可能保留可用数据集，本工作把特征窗口分成两套结果保存。
+---
 
-1. `full_window`：主分析结果。  
-   每个 cycle 使用它完整可用的、符合论文定义的 relaxation 段来提取特征。这个策略最大化数据集和 cycle 覆盖率，适合回答：
+## 2. 数据集纳入标准
 
-   ```text
-   只要数据集中存在满充后 relaxation，这些特征是否对 SOH 估计有用？
-   ```
+一个 cycle 的 rest 段被认定为"满充后弛豫"，需同时满足：
 
-2. `fixed_windows`：补充分析结果。  
-   从 relaxation 段起点开始，分别截取固定长度窗口，目前包括 `300s`、`600s`、`1800s`。这个策略更适合跨数据集公平比较，因为同一个窗口内的特征都来自相同观测时长；代价是会丢掉 relaxation 太短的数据集或 cycle。
+1. 电流接近 0；
+2. 电压接近满充电压；
+3. rest 段前为充电电流；
+4. rest 段后为放电电流。
 
-`full_window` 和 `fixed_windows` 回答的是不同问题，做结论时不要把两类结果混在同一张主表里解释。
+若同一 cycle 存在多个符合条件的段，取最长的一段。没有兼容 cycle 的数据集不会进入特征表，但审计日志中保留排除原因。
 
-## 数据集纳入标准
+---
 
-流水线会先审计所有数据集，然后只对满足论文 relaxation 定义的 cycle 提取特征。判据包括：
+## 3. 特征字段
 
-- 存在近零电流 rest 段；
-- rest 段电压接近满充电压；
-- rest 段前面是充电电流；
-- rest 段后面是放电电流。
+| 字段 | 含义 |
+|:---|:---|
+| `relax_var` | 弛豫电压方差 |
+| `relax_ske` | 弛豫电压偏度 |
+| `relax_kur` | 弛豫电压超额峰度 |
+| `relax_max` | 弛豫电压最大值 |
+| `relax_min` | 弛豫电压最小值 |
+| `relax_mean` | 弛豫电压均值 |
 
-有可用满充后 relaxation cycle 的数据集会进入特征输出。没有兼容 cycle 的数据集不会进入特征表，但仍会保留在 `audit/` 结果中，方便追溯排除原因。
+此外，每个 `.csv` 还包含以下元数据或标签：
 
-## 结果保存结构
+- `cycle_number`（对齐用，不作为默认输入特征）
+- `relax_duration_s`、`relax_points`、`relax_start_voltage`、`relax_end_voltage`、`relax_voltage_delta`
+- `SOH`、`RUL`、`discharge_capacity_in_Ah`
 
-最终结果按 BatteryLife 风格组织：不同数据集放在不同目录，同一数据集中的每个电池保存为独立 `.csv` 文件。每个 `.csv` 中：
+---
 
-- 每一行对应一个 cycle；
-- 每一列对应一个 relaxation 特征或元数据；
-- 最后几列为标签，例如 `SOH`、`RUL`、`discharge_capacity_in_Ah`；
-- `cycle_number` 只作为对齐和排查用的元数据，不作为默认模型输入特征。
-
-最终结果保存结构如下：
+## 4. 结果目录结构
 
 ```text
 relaxation/
-  full/
-    Tongji/
-      Tongji1_CY25-05_1--1.csv
-      ...
-    XJTU/
-      XJTU_2C_battery-1.csv
-      ...
-  fixed/
-    300s/
-      Tongji/
-      XJTU/
-      ...
-    600s/
-      ...
-    1800s/
-      ...
-  summary/
-    relaxation_dataset_coverage.csv
-    full_window_correlations.csv
-    fixed_window_correlations.csv
-    full_window_report.md
-    fixed_window_report.md
+├── full/                           # full_window 逐电池 .csv
+│   ├── Tongji/
+│   ├── XJTU/
+│   └── ...
+├── fixed/
+│   ├── 300s/                       # 300 s 固定窗口
+│   ├── 600s/
+│   └── 1800s/
+└── summary/                        # 覆盖率、相关性、报告
+    ├── relaxation_dataset_coverage.csv
+    ├── full_window_correlations.csv
+    ├── fixed_window_correlations.csv
+    ├── full_window_report.md
+    ├── fixed_window_report.md
+    └── dropped_cells_by_strategy.csv
 ```
 
-各目录含义：
+---
 
-- `full/`：主分析数据集。每个电池一个 `.csv`，使用完整可用 relaxation 段。
-- `fixed/`：补充分析数据集。先按固定窗口长度分目录，再按数据集/电池保存。
-- `summary/`：轻量汇总结果，包括覆盖率、相关性和报告。
+## 5. 代码模块与执行顺序
 
-如果问题是“这些 relaxation 特征对 SOH 是否有帮助”，优先看：
+### 5.1 模块说明
 
-```text
-relaxation/full/
-```
+| 模块 | 功能 | 输入 | 输出 |
+|:---|:---|:---|:---|
+| `relaxation_features.py` | **核心特征提取**。遍历所有 `.pkl` 电芯文件，审计每个 cycle 的电流/电压/时间序列，识别满充后 relaxation 段，计算 6 项统计特征，并计算与 SOH / RUL / 放电容量的相关性。 | `dataset/*.pkl`（电芯数据）；`dataset/Life labels/*_labels.json`（寿命标签）；`tutorials/feature_extraction/configs/dataset_intervals.json`（数据集配置） | 默认输出到 `--output-dir` 下：<br>• `audit/relaxation_cycle_audit.csv`（逐 cycle 审计日志）<br>• `audit/relaxation_dataset_coverage.csv`（数据集覆盖率）<br>• `combined/relaxation_cycle_features.csv`（全部特征）<br>• `full_window/relaxation_cycle_features.csv`（full 策略特征）<br>• `fixed_windows/relaxation_cycle_features.csv`（fixed 策略特征）<br>• `relaxation_feature_correlations.csv`（相关性矩阵）<br>• `relaxation_report.md`（Markdown 报告） |
+| `run_relaxation_pipeline.py` | **入口脚本**，直接调用 `relaxation_features.py` 的 `main()`。功能与输入输出同 `relaxation_features.py`。 | 同左 | 同左 |
+| `organize_outputs.py` | **（可选）输出整理**。将 `relaxation_features.py` 的扁平输出重新分区为 `audit/` / `full_window/` / `fixed_windows/` / `combined/` 目录。仅在需要调整输出结构时独立使用。 | `--input-dir`（含 `relaxation_cycle_features.csv` 等文件的目录，默认 `outputs`） | `--output-dir`（默认 `outputs_split`）下的分区目录 |
+| `build_cell_dataset.py` | **逐电池数据集组装**。读取已分区的 `full_window/` 和 `fixed_windows/by_window/` 结果，按 BatteryLife 风格拆分为每个电芯独立的 `.csv`，并复制汇总报告到 `summary/`。 | `--input-dir`（含 `full_window/` 和 `fixed_windows/by_window/` 的目录） | `full/`、`fixed/`、`summary/` |
 
-如果问题是“在相同观测时长下，不同数据集的 relaxation 特征表现如何”，优先看：
+### 5.2 执行顺序
 
-```text
-relaxation/fixed/
-```
-
-## 特征字段
-
-论文中的核心电压弛豫统计特征字段为：
-
-- `relax_var`：relaxation 电压序列方差；
-- `relax_ske`：relaxation 电压序列偏度；
-- `relax_max`：relaxation 电压最大值；
-- `relax_min`：relaxation 电压最小值；
-- `relax_mean`：relaxation 电压均值；
-- `relax_kur`：relaxation 电压超额峰度。
-
-特征表中还会保存一些质量控制和对齐字段，例如：
-
-- `relax_duration_s`
-- `relax_points`
-- `relax_start_voltage`
-- `relax_end_voltage`
-- `relax_voltage_delta`
-- `SOH`
-- `RUL`
-- `discharge_capacity_in_Ah`
-
-## 默认窗口
-
-默认固定窗口为：
-
-```text
-300s, 600s, 1800s
-```
-
-同时总是保存 `full` 窗口。`1800s` 是最接近论文 30 min 设置的固定窗口，但 BatteryLife 中很多数据集没有保存完整 30 min relaxation，因此主分析采用 `full_window`。
-
-## 整理已有结果
-
-## 生成逐电池数据集
-
-如果已经有 `_work/`、`outputs_split/` 等中间结果，可以不重新提取特征，直接生成最终逐电池数据集：
+标准复现只需两步：
 
 ```bash
+# 第 1 步：从原始 .pkl 提取特征与审计信息
+python relaxation/run_relaxation_pipeline.py --output-dir relaxation/_work
+
+# 第 2 步：生成逐电池数据集与汇总报告
 python relaxation/build_cell_dataset.py --input-dir relaxation/_work --output-dir relaxation
 ```
 
-这个命令会生成：
+**说明**：
+- `relaxation/_work` 为中间目录，确认 `full/`、`fixed/`、`summary/` 生成无误后可删除。
+- `run_relaxation_pipeline.py` 内部已通过 `write_output_layout()` 将结果按 `full_window/` 和 `fixed_windows/` 分区，因此可直接作为 `build_cell_dataset.py` 的输入，通常无需额外运行 `organize_outputs.py`。
+- 如果已有 `_work/` 等中间结果且不想重新提取特征，可直接运行第 2 步。
 
-```text
-relaxation/full/
-relaxation/fixed/
-relaxation/summary/
-```
+### 5.3 关键可调参数（`relaxation_features.py`）
 
-`outputs*` 目录只属于中间过程或验证过程；在最终结论导向的数据集组织中不需要保留。
+| 参数 | 默认值 | 说明 |
+|:---|:---|:---|
+| `--current-epsilon-c` | `0.02` | 相对电流阈值系数。判定 rest 的电流阈值为 `max(0.05 A, 0.02 × nominal_capacity)`。 |
+| `--voltage-tolerance` | `0.03` | 电压容差（V）。relaxation 段最高电压需 ≥ `cutoff_voltage - 0.03`。 |
+| `--windows-s` | `300 600 1800` | 固定窗口时长（秒）。 always 同时输出 `full` 窗口。 |
+| `--min-points` | `3` | 有效 relaxation 段最少数据点数。 |
+| `--min-duration-s` | `30` | 有效 relaxation 段最少持续时间（秒）。 |
+
+---
+
+## 6. 策略覆盖概况
+
+| 策略 | 保留电芯数 | 说明 |
+|:---|---:|:---|
+| `full` | 912 | 使用完整 relaxation，覆盖率最高 |
+| `fixed/300s` | 365 | relaxation 至少覆盖前 300 s |
+| `fixed/600s` | 288 | relaxation 至少覆盖前 600 s |
+| `fixed/1800s` | 117 | relaxation 至少覆盖前 1800 s，最接近论文 30 min |
+
+数量减少的两类原因：
+
+1. **无符合定义的满充后弛豫**：整数据集丢弃 `HUST`、`MICH_EXP`、`NA-ion`、`RWTH`、`ZN-coin`；部分丢弃 `CALB`（13/27）、`MATR`（85/169）、`SNL`（25/61）。
+2. **固定窗口时长不足**：`full` 中可用的电芯，因 relaxation 持续时间不足以构造对应固定窗口而被丢弃。
+
+各策略下被丢弃的具体电芯名称见 `summary/dropped_cells_by_strategy.csv`（字段：`strategy,dataset,dropped_cell`）。

@@ -1,50 +1,25 @@
-# 电压弛豫特征报告（fixed_windows 策略）
+# Relaxation Feature Report
 
-## 数据覆盖
+## Coverage
 
-- 处理数据集：18 个
-- 处理电芯：1382 个
-- 审计 cycle 数：2,179,522
-- 符合论文定义的满充后弛豫 cycle 数：1,645,099
+- Datasets processed: 1
+- Cells processed: 55
+- Cycles audited: 27595
+- Paper-compatible full-charge relaxation cycles: 27595
 
-兼容比例最高的数据集（前 10）：
+Datasets with the highest compatible-cycle ratios:
 
-| 数据集 | 电芯数 | 总 cycle 数 | 含 rest 段 cycle 数 | 兼容 cycle 数 | 兼容比例 | 中位时长(s) | 中位点数 | 特征行数 | 可用窗口 |
-|:---|---:|---:|---:|---:|---:|---:|---:|---:|:---|
-| XJTU | 23 | 6,938 | 6,938 | 6,938 | 1.000000 | 300.00 | 293 | 11,570 | 300s,full |
-| UL_PUR | 10 | 2,245 | 2,245 | 2,245 | 1.000000 | 1,205.06 | 12 | 2,245 | full |
-| SDU | 86 | 49,146 | 49,146 | 49,146 | 1.000000 | 950.66 | 97 | 49,146 | full |
-| CALCE | 13 | 14,298 | 14,298 | 14,297 | 0.999930 | 65.03 | 4 | 14,297 | full |
-| ISU_ILCC | 240 | 1,194,846 | 1,194,479 | 1,194,414 | 0.999638 | 592.00 | 120 | 2,860,353 | 1800s,300s,600s,full |
-| Stanford | 41 | 39,329 | 39,329 | 39,305 | 0.999390 | 692.18 | 152 | 39,309 | 300s,600s,full |
-| Stanford_2 | 181 | 188,621 | 188,621 | 188,489 | 0.999300 | 716.64 | 157 | 188,497 | 300s,600s,full |
-| MICH | 40 | 19,895 | 19,887 | 19,881 | 0.999296 | 1,624.09 | 145 | 65,501 | 1800s,300s,600s,full |
-| HNEI | 14 | 15,164 | 14,757 | 14,754 | 0.972962 | 158.66 | 6 | 14,754 | full |
-| Tongji | 130 | 59,038 | 59,038 | 54,364 | 0.920831 | 1,680.10 | 15 | 54,364 | full |
+dataset  cells  cycles  cycles_with_any_rest  cycles_with_paper_compatible_relaxation  paper_compatible_cycle_ratio  median_selected_duration_s  median_selected_points  feature_rows available_windows
+   XJTU     55   27595                 27595                                    27595                           1.0                       300.0                   293.0         45741         300s,full
 
-## SOH 相关性最强组合
+## Strongest SOH Correlations
 
-筛选条件：样本量 `n >= 100`，按 `|Spearman|` 降序排列（前 20）：
+Filtered to correlation rows with `n >= 100`.
 
-| 数据集 | 窗口 | 特征 | 目标 | 样本量 | Pearson | Spearman | \|Pearson\| | \|Spearman\| |
-|:---|:---|:---|:---|---:|---:|---:|---:|---:|
-| XJTU | 300s | relax_mean | SOH | 4,632 | 0.859827 | 0.816162 | 0.859827 | 0.816162 |
-| XJTU | 300s | relax_min | SOH | 4,632 | 0.849494 | 0.809586 | 0.849494 | 0.809586 |
-| XJTU | 300s | relax_var | SOH | 4,632 | -0.870542 | -0.762141 | 0.870542 | 0.762141 |
-| XJTU | 300s | relax_kur | SOH | 4,632 | -0.647519 | -0.740703 | 0.647519 | 0.740703 |
-| XJTU | 300s | relax_ske | SOH | 4,632 | -0.394585 | -0.519984 | 0.394585 | 0.519984 |
-| XJTU | 300s | relax_max | SOH | 4,632 | 0.472491 | 0.423872 | 0.472491 | 0.423872 |
-| CALB | 300s | relax_min | SOH | 1,379 | 0.726779 | 0.325865 | 0.726779 | 0.325865 |
-| CALB | 300s | relax_mean | SOH | 1,379 | 0.721565 | 0.298710 | 0.721565 | 0.298710 |
-| CALB | 300s | relax_max | SOH | 1,379 | 0.721128 | 0.287919 | 0.721128 | 0.287919 |
-| CALB | 300s | relax_var | SOH | 1,379 | 0.601459 | 0.176998 | 0.601459 | 0.176998 |
-| ISU_ILCC | 1800s | relax_min | SOH | 12,163 | 0.139470 | 0.165804 | 0.139470 | 0.165804 |
-| ISU_ILCC | 1800s | relax_mean | SOH | 12,163 | 0.138257 | 0.162650 | 0.138257 | 0.162650 |
-| ISU_ILCC | 1800s | relax_max | SOH | 12,163 | 0.113195 | 0.147424 | 0.113195 | 0.147424 |
-| CALB | 300s | relax_ske | SOH | 1,379 | 0.093093 | 0.099448 | 0.093093 | 0.099448 |
-| ISU_ILCC | 1800s | relax_var | SOH | 12,163 | -0.084985 | -0.087481 | 0.084985 | 0.087481 |
-| ISU_ILCC | 600s | relax_min | SOH | 582,900 | 0.069986 | 0.085054 | 0.069986 | 0.085054 |
-| ISU_ILCC | 600s | relax_max | SOH | 582,900 | 0.070095 | 0.084289 | 0.070095 | 0.084289 |
-| ISU_ILCC | 600s | relax_mean | SOH | 582,900 | 0.069212 | 0.082999 | 0.069212 | 0.082999 |
-| ISU_ILCC | 1800s | relax_ske | SOH | 12,163 | -0.065162 | -0.062317 | 0.065162 | 0.062317 |
-| MICH | 1800s | relax_kur | SOH | 5,975 | -0.037270 | -0.060356 | 0.037270 | 0.060356 |
+dataset window    feature target     n   pearson  spearman  abs_pearson  abs_spearman
+   XJTU   300s  relax_kur    SOH 18146 -0.127186 -0.572328     0.127186      0.572328
+   XJTU   300s  relax_ske    SOH 18146 -0.258167 -0.543845     0.258167      0.543845
+   XJTU   300s relax_mean    SOH 18146  0.227774  0.506519     0.227774      0.506519
+   XJTU   300s  relax_min    SOH 18146  0.188531  0.488583     0.188531      0.488583
+   XJTU   300s  relax_var    SOH 18146 -0.088010 -0.403608     0.088010      0.403608
+   XJTU   300s  relax_max    SOH 18146  0.251894  0.389826     0.251894      0.389826

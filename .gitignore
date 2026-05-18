@@ -11,6 +11,8 @@ results/
 analysis/
 
 dataset/
+XJTU_Battery_Dataset/
+relaxation/_work_xjtu/
 check_data_scripts/logs
 check_data_scripts/plots
 check_data_scripts/logs_v11

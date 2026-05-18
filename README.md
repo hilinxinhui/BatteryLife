@@ -29,6 +29,14 @@ This is the official repository for [BatteryLife: A Comprehensive Dataset and Be
 - **The most diverse battery life dataset:** BatteryLife contains 8 battery formats, 59 chemical systems, 9 operation temperatures, and 421 charge/discharge protocols.
 - **A comprehensive benchmark for battery life prediction:** BatteryLife provides 18 benchmark methods with open-source codes in this repository. The 18 benchmark methods include popular methods for battery life prediction, popular baselines in time series analysis, and a series of baselines proposed by this work.
 
+## v11 数据规模补充说明
+
+截至 BatteryLife v11，按当前 Hugging Face/Zenodo 处理后数据目录中的 `.pkl` 文件统计，数据集共包含 **1,382** 块电池。原论文中提到的 **990** 块电池对应的是 BatteryLife 初始发布时的论文统计口径，因此与当前 v11 的文件规模存在差异。
+
+相对于论文中的 990 块电池，v11 当前规模净增加 **392** 块。主要来源包括：新增完整 Stanford 数据集目录 `Stanford_2`，包含 **181** 块电池；新增标准化 `SDU` 数据集，包含 **86** 块电池；既有目录中可逐文件追踪到的补充电池共 **112** 块，其中 `SNL` 增加 9 块，`MICH_EXP` 增加 6 块，`Tongji` 增加 22 块，`ZN-coin` 增加 45 块，`NA-ion` 增加 30 块。剩余 **13** 块来自论文统计口径与初版 Zenodo 文件/标签清单之间的差异：初版 Zenodo 中已有 `UL_PUR` 10 块，以及 `NA-ion` 标签清单比论文 Na-ion 统计多 3 块。
+
+换言之，若以论文中的 990 块为基线，v11 当前总数为 1,382 块，净增 392 块；若以初版 Zenodo 文件/标签清单对应的 1,003 块为基线，则 v11 可逐文件追踪的新增量为 **379** 块，即 `Stanford_2` 181 块、`SDU` 86 块、既有目录补充 112 块。
+
 ## Data availability
 
 The processed datasets can be accessed via multiple ways:

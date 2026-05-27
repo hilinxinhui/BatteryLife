@@ -1,0 +1,26 @@
+{
+  "split_name": "HNEI",
+  "task_name": "SOH",
+  "source": "all BatteryLife feature CSV files with SOH labels; excludes seed variants and Stanford duplicates by task definition",
+  "seed": 2021,
+  "train": [
+    "HNEI_18650_NMC_LCO_25C_0-100_0.5-1.5C_f.csv",
+    "HNEI_18650_NMC_LCO_25C_0-100_0.5-1.5C_c.csv",
+    "HNEI_18650_NMC_LCO_25C_0-100_0.5-1.5C_b.csv",
+    "HNEI_18650_NMC_LCO_25C_0-100_0.5-1.5C_j.csv",
+    "HNEI_18650_NMC_LCO_25C_0-100_0.5-1.5C_n.csv",
+    "HNEI_18650_NMC_LCO_25C_0-100_0.5-1.5C_s.csv",
+    "HNEI_18650_NMC_LCO_25C_0-100_0.5-1.5C_p.csv",
+    "HNEI_18650_NMC_LCO_25C_0-100_0.5-1.5C_a.csv"
+  ],
+  "valid": [
+    "HNEI_18650_NMC_LCO_25C_0-100_0.5-1.5C_d.csv",
+    "HNEI_18650_NMC_LCO_25C_0-100_0.5-1.5C_e.csv"
+  ],
+  "test": [
+    "HNEI_18650_NMC_LCO_25C_0-100_0.5-1.5C_l.csv",
+    "HNEI_18650_NMC_LCO_25C_0-100_0.5-1.5C_o.csv",
+    "HNEI_18650_NMC_LCO_25C_0-100_0.5-1.5C_g.csv",
+    "HNEI_18650_NMC_LCO_25C_0-100_0.5-1.5C_t.csv"
+  ]
+}

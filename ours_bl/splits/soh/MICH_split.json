@@ -1,0 +1,52 @@
+{
+  "split_name": "MICH",
+  "task_name": "SOH",
+  "source": "all BatteryLife feature CSV files with SOH labels; excludes seed variants and Stanford duplicates by task definition",
+  "seed": 2021,
+  "train": [
+    "MICH_BLForm8_pouch_NMC_45C_0-100_1-1C_h.csv",
+    "MICH_BLForm16_pouch_NMC_25C_0-100_1-1C_f.csv",
+    "MICH_BLForm3_pouch_NMC_45C_0-100_1-1C_c.csv",
+    "MICH_BLForm10_pouch_NMC_25C_0-100_1-1C_j.csv",
+    "MICH_BLForm6_pouch_NMC_45C_0-100_1-1C_f.csv",
+    "MICH_MCForm28_pouch_NMC_25C_0-100_1-1C_h.csv",
+    "MICH_BLForm20_pouch_NMC_25C_0-100_1-1C_j.csv",
+    "MICH_MCForm40_pouch_NMC_45C_0-100_1-1C_j.csv",
+    "MICH_MCForm34_pouch_NMC_45C_0-100_1-1C_d.csv",
+    "MICH_MCForm33_pouch_NMC_45C_0-100_1-1C_c.csv",
+    "MICH_BLForm2_pouch_NMC_45C_0-100_1-1C_b.csv",
+    "MICH_BLForm17_pouch_NMC_25C_0-100_1-1C_g.csv",
+    "MICH_BLForm1_pouch_NMC_45C_0-100_1-1C_a.csv",
+    "MICH_BLForm9_pouch_NMC_45C_0-100_1-1C_i.csv",
+    "MICH_MCForm39_pouch_NMC_45C_0-100_1-1C_i.csv",
+    "MICH_MCForm23_pouch_NMC_25C_0-100_1-1C_c.csv",
+    "MICH_BLForm4_pouch_NMC_45C_0-100_1-1C_d.csv",
+    "MICH_MCForm32_pouch_NMC_45C_0-100_1-1C_b.csv",
+    "MICH_MCForm25_pouch_NMC_25C_0-100_1-1C_e.csv",
+    "MICH_MCForm30_pouch_NMC_25C_0-100_1-1C_j.csv",
+    "MICH_MCForm38_pouch_NMC_45C_0-100_1-1C_h.csv",
+    "MICH_MCForm22_pouch_NMC_25C_0-100_1-1C_b.csv",
+    "MICH_BLForm13_pouch_NMC_25C_0-100_1-1C_c.csv",
+    "MICH_MCForm24_pouch_NMC_25C_0-100_1-1C_d.csv"
+  ],
+  "valid": [
+    "MICH_BLForm11_pouch_NMC_25C_0-100_1-1C_a.csv",
+    "MICH_MCForm27_pouch_NMC_25C_0-100_1-1C_g.csv",
+    "MICH_BLForm15_pouch_NMC_25C_0-100_1-1C_e.csv",
+    "MICH_MCForm36_pouch_NMC_45C_0-100_1-1C_f.csv",
+    "MICH_MCForm37_pouch_NMC_45C_0-100_1-1C_g.csv",
+    "MICH_BLForm19_pouch_NMC_25C_0-100_1-1C_i.csv",
+    "MICH_BLForm18_pouch_NMC_25C_0-100_1-1C_h.csv",
+    "MICH_MCForm21_pouch_NMC_25C_0-100_1-1C_a.csv"
+  ],
+  "test": [
+    "MICH_BLForm14_pouch_NMC_25C_0-100_1-1C_d.csv",
+    "MICH_MCForm31_pouch_NMC_45C_0-100_1-1C_a.csv",
+    "MICH_MCForm29_pouch_NMC_25C_0-100_1-1C_i.csv",
+    "MICH_BLForm12_pouch_NMC_25C_0-100_1-1C_b.csv",
+    "MICH_BLForm5_pouch_NMC_45C_0-100_1-1C_e.csv",
+    "MICH_BLForm7_pouch_NMC_45C_0-100_1-1C_g.csv",
+    "MICH_MCForm35_pouch_NMC_45C_0-100_1-1C_e.csv",
+    "MICH_MCForm26_pouch_NMC_25C_0-100_1-1C_f.csv"
+  ]
+}

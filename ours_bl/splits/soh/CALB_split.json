@@ -1,0 +1,39 @@
+{
+  "split_name": "CALB",
+  "task_name": "SOH",
+  "source": "ours_bl SOH split: test cells are selected from analysis/soh_mlp_investigation/cell_ranking_by_dataset.md; train/valid are randomly split from remaining cells using BatteryLife-style 60/20/20 proportions and seed 2021",
+  "seed": 2021,
+  "train": [
+    "CALB_25_T25-1.csv",
+    "CALB_25_T25-2.csv",
+    "CALB_35_B173.csv",
+    "CALB_35_B222.csv",
+    "CALB_35_B223.csv",
+    "CALB_35_B224.csv",
+    "CALB_35_B227.csv",
+    "CALB_35_B228.csv",
+    "CALB_35_B229.csv",
+    "CALB_35_B230.csv",
+    "CALB_35_B247.csv",
+    "CALB_35_B249.csv",
+    "CALB_35_B250.csv",
+    "CALB_45_B255.csv"
+  ],
+  "valid": [
+    "CALB_35_B174.csv",
+    "CALB_35_B175.csv",
+    "CALB_35_B248.csv",
+    "CALB_45_B253.csv",
+    "CALB_45_B256.csv"
+  ],
+  "test": [
+    "CALB_0_B183.csv",
+    "CALB_0_B190.csv",
+    "CALB_0_B188.csv",
+    "CALB_0_B187.csv",
+    "CALB_0_B189.csv",
+    "CALB_0_B182.csv",
+    "CALB_0_B185.csv",
+    "CALB_0_B184.csv"
+  ]
+}

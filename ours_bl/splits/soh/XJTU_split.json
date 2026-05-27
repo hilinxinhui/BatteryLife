@@ -1,0 +1,35 @@
+{
+  "split_name": "XJTU",
+  "task_name": "SOH",
+  "source": "all BatteryLife feature CSV files with SOH labels; excludes seed variants and Stanford duplicates by task definition",
+  "seed": 2021,
+  "train": [
+    "XJTU_2C_battery-4.csv",
+    "XJTU_2C_battery-7.csv",
+    "XJTU_3C_battery-11.csv",
+    "XJTU_3C_battery-3.csv",
+    "XJTU_3C_battery-9.csv",
+    "XJTU_2C_battery-1.csv",
+    "XJTU_3C_battery-6.csv",
+    "XJTU_2C_battery-3.csv",
+    "XJTU_3C_battery-14.csv",
+    "XJTU_3C_battery-5.csv",
+    "XJTU_3C_battery-12.csv",
+    "XJTU_2C_battery-5.csv",
+    "XJTU_2C_battery-6.csv"
+  ],
+  "valid": [
+    "XJTU_3C_battery-8.csv",
+    "XJTU_3C_battery-10.csv",
+    "XJTU_3C_battery-2.csv",
+    "XJTU_3C_battery-15.csv"
+  ],
+  "test": [
+    "XJTU_2C_battery-2.csv",
+    "XJTU_2C_battery-8.csv",
+    "XJTU_3C_battery-1.csv",
+    "XJTU_3C_battery-4.csv",
+    "XJTU_3C_battery-7.csv",
+    "XJTU_3C_battery-13.csv"
+  ]
+}
